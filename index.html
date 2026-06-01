@@ -7,9 +7,9 @@
 <body>
 
   <div id="stranka1">
-    <h2>Bubnová garáž</h2>
-    <p>Zadajte váš kód:</p>
-    <input type="number" id="kodInput" />
+    <h2>Bubnová Garáž</h2>
+    <p>Zadajte vas kod:</p>
+    <input type="number" id="kod_vstup" />
     <br><br>
     <button onclick="prihlasit()">Prihlásiť</button>
     <br><br>
@@ -17,8 +17,8 @@
   </div>
 
   <div id="stranka2" style="display:none;">
-    <h2>Bubnová garáž</h2>
-    <p>Vaše auto sa nachádza v slote číslo: <b id="slotCislo"></b></p>
+    <h2>Bubnová Garáž</h2>
+    <p>Vaše auto sa nachádza v slote číslo: <b id="cislo_slotu"></b></p>
     <br>
     <button onclick="vyparkovanie()">Vyparkovať</button>
     <br><br>
@@ -26,21 +26,21 @@
   </div>
 
 <script type="module">
-  import { initializeApp } from "https://bubnovagaraz-default-rtdb.europe-west1.firebasedatabase.app/";
-  import { getDatabase, ref, get, set } from "https://bubnovagaraz-default-rtdb.europe-west1.firebasedatabase.app/";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "tvoj_api_key",
-    databaseURL: "https://bubnovagaraz-default-rtdb.europe-west1.firebasedatabase.app/",
+  const konfig = {
+    apiKey: "AIzaSyB_zI46x4fn8_b_qgdFib3KtylPs5D9Kww",
+    databaseURL: "https://bubnovagaraz-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "bubnovagaraz",
   };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  let najdenySlot = null;
+  const apka = initializeApp(konfig);
+  const baza = getDatabase(apka);
+  let najdeny_slot = null;
 
   window.prihlasit = async function() {
-    const kod = document.getElementById('kodInput').value;
+    const kod = document.getElementById('kod_vstup').value;
     document.getElementById('chyba').textContent = '';
 
     if (kod.length != 4) {
@@ -48,19 +48,19 @@
       return;
     }
 
-    const snapshot = await get(ref(db, 'sloty'));
+    const snapshot = await get(ref(baza, 'sloty'));
     const data = snapshot.val();
-    najdenySlot = null;
+    najdeny_slot = null;
 
     for (let klic in data) {
       if (String(data[klic].kod) == String(kod) && data[klic].obsadene == true) {
-        najdenySlot = klic;
+        najdeny_slot = klic;
         break;
       }
     }
 
-    if (najdenySlot != null) {
-      document.getElementById('slotCislo').textContent = najdenySlot;
+    if (najdeny_slot != null) {
+      document.getElementById('cislo_slotu').textContent = najdeny_slot;
       document.getElementById('stranka1').style.display = 'none';
       document.getElementById('stranka2').style.display = 'block';
     } else {
@@ -69,18 +69,13 @@
   };
 
   window.vyparkovanie = async function() {
-    if (najdenySlot == null) return;
-    await set(ref(db, '/akcia'), 'vystup');
-    await set(ref(db, '/akciaSlot'), parseInt(najdenySlot));
-    document.getElementById('sprava').textContent = 'Garaze sa otvara, prosim pockaite pri vchode.';
+    if (najdeny_slot == null) return;
+    await set(ref(baza, '/akcia'), 'vystup');
+    await set(ref(baza, '/akciaSlot'), parseInt(najdeny_slot));
+    document.getElementById('sprava').textContent = 'Garaze sa otvara, pockaite pri vchode.';
     document.querySelector('#stranka2 button').disabled = true;
   };
 </script>
 
 </body>
 </html>
-const firebaseConfig = {
-    apiKey: "452940882811",                    
-    databaseURL: "https://bubnovagaraz-default-rtdb.europe-west1.firebasedatabase.app/  
-    projectId: "bubnovagaraz",                
-};
