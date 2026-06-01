@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <title>Bubnovagaraz</title>
+</head>
+<body>
+
+  <div id="stranka1">
+    <h2>Bubnová garáž</h2>
+    <p>Zadajte váš kód:</p>
+    <input type="number" id="kodInput" />
+    <br><br>
+    <button onclick="prihlasit()">Prihlásiť</button>
+    <br><br>
+    <p id="chyba" style="color:red;"></p>
+  </div>
+
+  <div id="stranka2" style="display:none;">
+    <h2>Bubnová garáž</h2>
+    <p>Vaše auto sa nachádza v slote číslo: <b id="slotCislo"></b></p>
+    <br>
+    <button onclick="vyparkovanie()">Vyparkovať</button>
+    <br><br>
+    <p id="sprava"></p>
+  </div>
+
+<script type="module">
+  import { initializeApp } from "https://bubnovagaraz-default-rtdb.europe-west1.firebasedatabase.app/";
+  import { getDatabase, ref, get, set } from "https://bubnovagaraz-default-rtdb.europe-west1.firebasedatabase.app/";
+
+  const firebaseConfig = {
+    apiKey: "tvoj_api_key",
+    databaseURL: "https://bubnovagaraz-default-rtdb.europe-west1.firebasedatabase.app/",
+    projectId: "bubnovagaraz",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  let najdenySlot = null;
+
+  window.prihlasit = async function() {
+    const kod = document.getElementById('kodInput').value;
+    document.getElementById('chyba').textContent = '';
+
+    if (kod.length != 4) {
+      document.getElementById('chyba').textContent = 'Zadajte 4 ciferny kod';
+      return;
+    }
+
+    const snapshot = await get(ref(db, 'sloty'));
+    const data = snapshot.val();
+    najdenySlot = null;
+
+    for (let klic in data) {
+      if (String(data[klic].kod) == String(kod) && data[klic].obsadene == true) {
+        najdenySlot = klic;
+        break;
+      }
+    }
+
+    if (najdenySlot != null) {
+      document.getElementById('slotCislo').textContent = najdenySlot;
+      document.getElementById('stranka1').style.display = 'none';
+      document.getElementById('stranka2').style.display = 'block';
+    } else {
+      document.getElementById('chyba').textContent = 'Nespravny kod';
+    }
+  };
+
+  window.vyparkovanie = async function() {
+    if (najdenySlot == null) return;
+    await set(ref(db, '/akcia'), 'vystup');
+    await set(ref(db, '/akciaSlot'), parseInt(najdenySlot));
+    document.getElementById('sprava').textContent = 'Garaze sa otvara, prosim pockaite pri vchode.';
+    document.querySelector('#stranka2 button').disabled = true;
+  };
+</script>
+
+</body>
+</html>
