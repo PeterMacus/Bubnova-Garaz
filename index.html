@@ -64,7 +64,7 @@
       document.getElementById('stranka1').style.display = 'none';
       document.getElementById('stranka2').style.display = 'block';
     } else {
-      document.getElementById('chyba').textContent = 'Nespravny kod';
+      document.getElementById('chyba').textContent = 'Nesprávny kód';
     }
   };
 
@@ -72,7 +72,7 @@
     if (najdeny_slot == null) return;
     await set(ref(baza, '/akcia'), 'vystup');
     await set(ref(baza, '/akciaSlot'), parseInt(najdeny_slot));
-    document.getElementById('sprava').textContent = 'Garaze sa otvara, pockaite pri vchode.';
+    document.getElementById('sprava').textContent = 'Garáž sa otvára, počkajte pri vchode.';
     document.querySelector('#stranka2 button').disabled = true;
   };
 </script>
