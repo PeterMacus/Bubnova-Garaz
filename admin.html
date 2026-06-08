@@ -3,6 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <title>Bubnová garáž - Admin</title>
+  <style>
+   
+    .kontajner-akcie {
+      position: relative;
+    }
+    .free-range-btn {
+      position: absolute;
+      left: 20px; 
+      top: 50%;
+      transform: translateY(-50%);
+      white-space: nowrap;
+      background-color: #ff4d4d;
+      color: white;
+      border: 1px solid #cc0000;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 3px;
+    }
+    .free-range-btn:hover {
+      background-color: #e60000;
+    }
+  </style>
 </head>
 <body>
 
@@ -25,9 +48,9 @@
       <thead>
         <tr>
           <th>Slot</th>
-          <th>Obsadene</th>
-          <th>Kod</th>
-          <th>Akcia</th> </tr>
+          <th>Obsadené</th>
+          <th>Kód</th>
+        </tr>
       </thead>
       <tbody id="tabulka">
       </tbody>
@@ -58,7 +81,7 @@
       document.getElementById('panel').style.display = 'block';
       spusti_sledovanie();
     } else {
-      document.getElementById('chyba').textContent = 'Nespravne meno alebo heslo';
+      document.getElementById('chyba').textContent = 'Nesprávne meno alebo heslo';
     }
   };
 
@@ -91,7 +114,7 @@
 
         const td_obsadene = document.createElement('td');
         if (slot.obsadene == true) {
-          td_obsadene.textContent = 'ANO';
+          td_obsadene.textContent = 'ÁNO';
           td_obsadene.style.color = 'red';
         } else {
           td_obsadene.textContent = 'NIE';
@@ -105,23 +128,25 @@
           td_kod.textContent = slot.kod;
         }
 
-        const td_akcia = document.createElement('td');
+        riadok.appendChild(td_slot);
+        riadok.appendChild(td_obsadene);
+        riadok.appendChild(td_kod);
+
+        
         if (slot.obsadene == true) {
+          td_kod.className = 'kontajner-akcie';
+          
           const tlacidlo = document.createElement('button');
           tlacidlo.textContent = 'Vyparkovať';
+          tlacidlo.className = 'free-range-btn';
+          
           tlacidlo.onclick = function() {
             const cisloSlotu = klic.replace(/[^0-9]/g, ''); 
             window.vyparkovatAuto(cisloSlotu);
           };
-          td_akcia.appendChild(tlacidlo);
-        } else {
-          td_akcia.textContent = '-';
+          td_kod.appendChild(tlacidlo);
         }
 
-        riadok.appendChild(td_slot);
-        riadok.appendChild(td_obsadene);
-        riadok.appendChild(td_kod);
-        riadok.appendChild(td_akcia); 
         tabulka.appendChild(riadok);
       }
     });
