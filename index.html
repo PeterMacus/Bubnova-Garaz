@@ -3,25 +3,123 @@
 <head>
   <meta charset="UTF-8">
   <title>Bubnová garáž</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1e222b;
+      color: #f5f5f5;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 80vh;
+    }
+
+    #stranka1, #stranka2 {
+      background-color: #282c34;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #ffffff;
+      border-bottom: 2px solid #ff4d4d;
+      padding-bottom: 10px;
+      font-size: 24px;
+    }
+
+    p {
+      color: #abb2bf;
+      margin: 15px 0 8px 0;
+      font-size: 16px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 5px;
+      border: 1px solid #3e4451;
+      border-radius: 6px;
+      background-color: #21252b;
+      color: #fff;
+      font-size: 18px;
+      text-align: center;
+      letter-spacing: 2px;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+
+    input[type="number"]:focus {
+      border-color: #ff4d4d;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background-color: #e60000;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:disabled {
+      background-color: #4b5263;
+      color: #abb2bf;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #cislo_slotu {
+      color: #ff4d4d;
+      font-size: 22px;
+      background-color: #21252b;
+      padding: 4px 12px;
+      border-radius: 4px;
+      margin-left: 5px;
+    }
+
+    #sprava {
+      color: #98c379;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+  </style>
 </head>
 <body>
 
   <div id="stranka1">
     <h2>Bubnová garáž</h2>
     <p>Zadajte váš kód:</p>
-    <input type="number" id="kod_vstup" />
-    <br><br>
+    <input type="number" id="kod_vstup" placeholder="••••" />
     <button onclick="prihlasit()">Prihlásiť</button>
-    <br><br>
-    <p id="chyba" style="color:red;"></p>
+    <p id="chyba" style="color:#ff6b6b; font-weight: bold; margin-top: 15px;"></p>
   </div>
 
   <div id="stranka2" style="display:none;">
     <h2>Bubnová garáž</h2>
-    <p>Vaše auto sa nachádza v slote číslo: <b id="cislo_slotu"></b></p>
-    <br>
-    <button id="btn_vyparkovanie" onclick="vyparkovanie()">Vyparkovať</button>
-    <br><br>
+    <p>Vaše auto sa nachádza v slote:<b id="cislo_slotu"></b></p>
+    <button id="btn_vyparkovanie" onclick="vyparkovanie()">Vyparkovať auto</button>
     <p id="sprava"></p>
   </div>
 
@@ -45,7 +143,7 @@
     document.getElementById('chyba').textContent = '';
 
     if (kod.length != 4) {
-      document.getElementById('chyba').textContent = 'Zadajte 4 ciferný kód';
+      document.getElementById('chyba').textContent = 'Zadajte 4-ciferný kód';
       return;
     }
 
@@ -74,7 +172,6 @@
     sledovanie = onValue(ref(baza, '/sloty/' + slot + '/obsadene'), function(snapshot) {
       const obsadene = snapshot.val();
       if (obsadene == false) {
-        // slot sa uvolnil - auto vyparkoval
         najdeny_slot = null;
         document.getElementById('stranka2').style.display = 'none';
         document.getElementById('stranka1').style.display = 'block';
@@ -88,7 +185,7 @@
   window.vyparkovanie = async function() {
     if (najdeny_slot == null) return;
     await set(ref(baza, '/akcia'), 'vystup');
-    await set(ref(baza, '/akciaSlot'), parseInt(najdeny_slot));
+    await set(ref(baza, '/akciaSlot'), parseInt(najdeny_slot.replace(/[^0-9]/g, '')));
     document.getElementById('sprava').textContent = 'Garáž sa otvára, počkajte pri vchode.';
     document.getElementById('btn_vyparkovanie').disabled = true;
   };
