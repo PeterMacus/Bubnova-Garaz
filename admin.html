@@ -2,25 +2,24 @@
 <html lang="sk">
 <head>
   <meta charset="UTF-8">
-  <title>Bubnovagaraz - Admin</title>
+  <title>Bubnová garáž - Admin</title>
 </head>
 <body>
 
   <div id="prihlasenie">
     <h2>Admin panel</h2>
-    <p>Meno111:</p>
+    <p>Meno:</p>
     <input type="text" id="meno_vstup" />
     <p>Heslo:</p>
     <input type="password" id="heslo_vstup" />
     <br><br>
-    <button onclick="prihlasit()">Prihlasit</button>
+    <button onclick="prihlasit()">Prihlásiť</button>
     <br><br>
     <p id="chyba" style="color:red;"></p>
   </div>
 
   <div id="panel" style="display:none;">
-    <h2>Admin panel - prehled</h2>
-    <p>Data sa aktualizuju automaticky.</p>
+    <h2>Admin panel - prehľad</h2>
     <br>
     <table border="1" cellpadding="8">
       <thead>
@@ -34,7 +33,7 @@
       </tbody>
     </table>
     <br>
-    <button onclick="odhlasit()">Odhlasit</button>
+    <button onclick="odhlasit()">Odhlásiť</button>
   </div>
 
 <script type="module">
