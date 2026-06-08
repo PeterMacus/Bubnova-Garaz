@@ -4,23 +4,143 @@
   <meta charset="UTF-8">
   <title>Bubnová garáž - Admin</title>
   <style>
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1e222b;
+      color: #f5f5f5;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 80vh;
+    }
+
+    #prihlasenie, #panel {
+      background-color: #282c34;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 450px;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #ffffff;
+      border-bottom: 2px solid #ff4d4d;
+      padding-bottom: 10px;
+      font-size: 24px;
+    }
+
+    p {
+      color: #abb2bf;
+      margin: 10px 0 5px 0;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #3e4451;
+      border-radius: 6px;
+      background-color: #21252b;
+      color: #fff;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus, input[type="password"]:focus {
+      border-color: #ff4d4d;
+      outline: none;
+    }
+
+    /* Tlačidlá */
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    button:hover {
+      background-color: #e60000;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button[onclick="odhlasit()"] {
+      background-color: #4b5263;
+      margin-top: 20px;
+    }
+    button[onclick="odhlasit()"]:hover {
+      background-color: #3e4451;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #21252b;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #3e4451;
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+    }
+
+    tr {
+      border-bottom: 1px solid #282c34;
+    }
+
+    tr:last-child {
+      border-bottom: none;
+    }
+
     .kontajner-akcie {
       position: relative;
     }
+
     .free-range-btn {
       position: absolute;
-      left: 100px; 
+      left: calc(100% + 15px); 
       top: 50%;
       transform: translateY(-50%);
       white-space: nowrap;
       background-color: #ff4d4d;
       color: white;
-      border: 1px solid #cc0000;
-      padding: 4px 10px;
+      border: none;
+      padding: 6px 12px;
+      font-size: 13px;
       cursor: pointer;
       font-weight: bold;
-      border-radius: 3px;
+      border-radius: 4px;
+      width: auto;
+      box-shadow: 0 4px 10px rgba(255, 77, 77, 0.2);
     }
+
     .free-range-btn:hover {
       background-color: #e60000;
     }
@@ -34,16 +154,14 @@
     <input type="text" id="meno_vstup" />
     <p>Heslo:</p>
     <input type="password" id="heslo_vstup" />
-    <br><br>
+    <br>
     <button onclick="prihlasit()">Prihlásiť</button>
-    <br><br>
-    <p id="chyba" style="color:red;"></p>
+    <p id="chyba" style="color:#ff6b6b; font-weight: bold; text-align: center; margin-top: 15px;"></p>
   </div>
 
   <div id="panel" style="display:none;">
     <h2>Admin panel - prehľad</h2>
-    <br>
-    <table border="1" cellpadding="8">
+    <table id="admin-table">
       <thead>
         <tr>
           <th>Slot</th>
@@ -54,7 +172,6 @@
       <tbody id="tabulka">
       </tbody>
     </table>
-    <br>
     <button onclick="odhlasit()">Odhlásiť</button>
   </div>
 
@@ -114,10 +231,12 @@
         const td_obsadene = document.createElement('td');
         if (slot.obsadene == true) {
           td_obsadene.textContent = 'ÁNO';
-          td_obsadene.style.color = 'red';
+          td_obsadene.style.color = '#ff6b6b';
+          td_obsadene.style.fontWeight = 'bold';
         } else {
           td_obsadene.textContent = 'NIE';
-          td_obsadene.style.color = 'green';
+          td_obsadene.style.color = '#98c379';
+          td_obsadene.style.fontWeight = 'bold';
         }
 
         const td_kod = document.createElement('td');
