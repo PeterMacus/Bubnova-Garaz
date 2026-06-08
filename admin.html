@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <title>Bubnová garáž - Admin</title>
   <style>
-   
+    /* Stylovanie pre free-range tlačidlo umiestnené vedľa riadku */
     .kontajner-akcie {
       position: relative;
     }
     .free-range-btn {
       position: absolute;
-      left: 100px; 
+      left: 15px; /* Bezpečné posunutie tlačidla vpravo za tabuľku */
       top: 50%;
       transform: translateY(-50%);
       white-space: nowrap;
@@ -92,10 +92,10 @@
     document.getElementById('heslo_vstup').value = '';
   };
 
-  window.vyparkovatAuto = function(cisloSlotu) {
+  window.vyparkovatAuto = async function(cisloSlotu) {
     if (confirm("Naozaj chcete poslať príkaz na vyparkovanie zo slotu " + cisloSlotu + "?")) {
-      set(ref(baza, 'akcia'), "vyparkovat");
-      set(ref(baza, 'akciaSlot'), parseInt(cisloSlotu));
+      await set(ref(baza, '/akcia'), 'vystup');
+      await set(ref(baza, '/akciaSlot'), parseInt(cisloSlotu));
     }
   };
 
@@ -132,7 +132,6 @@
         riadok.appendChild(td_obsadene);
         riadok.appendChild(td_kod);
 
-        
         if (slot.obsadene == true) {
           td_kod.className = 'kontajner-akcie';
           
