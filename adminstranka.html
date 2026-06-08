@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <title>Bubnová garáž - Admin</title>
+</head>
+<body>
+
+  <div id="prihlasenie">
+    <h2>Admin panel</h2>
+    <p>Meno:</p>
+    <input type="text" id="meno_vstup" />
+    <p>Heslo:</p>
+    <input type="password" id="heslo_vstup" />
+    <br><br>
+    <button onclick="prihlasit()">Prihlásiť</button>
+    <br><br>
+    <p id="chyba" style="color:red;"></p>
+  </div>
+
+  <div id="panel" style="display:none;">
+    <h2>Admin panel - prehľad</h2>
+    <br>
+    <table border="1" cellpadding="8">
+      <tr>
+        <th>Slot</th>
+        <th>Obsadene</th>
+        <th>Kod</th>
+      </tr>
+      <tbody id="tabulka">
+      </tbody>
+    </table>
+    <br>
+    <p>Akcia: <b id="akcia_val">-</b></p>
+    <p>Akcia slot: <b id="akcia_slot_val">-</b></p>
+    <br>
+    <button onclick="odhlasit()">Odhlásiť</button>
+  </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const konfig = {
+    apiKey: "AIzaSyB_zI46x4fn8_b_qgdFib3KtylPs5D9Kww",
+    databaseURL: "https://bubnovagaraz-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "bubnovagaraz",
+  };
+
+  const apka = initializeApp(konfig);
+  const baza = getDatabase(apka);
+
+  window.prihlasit = function() {
+    const meno = document.getElementById('meno_vstup').value;
+    const heslo = document.getElementById('heslo_vstup').value;
+
+    if (meno == "admin1" && heslo == "admin1") {
+      document.getElementById('prihlasenie').style.display = 'none';
+      document.getElementById('panel').style.display = 'block';
+      spusti_sledovanie();
+    } else {
+      document.getElementById('chyba').textContent = 'Nesprávne meno alebo heslo';
+    }
+  };
+
+  window.odhlasit = function() {
+    document.getElementById('panel').style.display = 'none';
+    document.getElementById('prihlasenie').style.display = 'block';
+    document.getElementById('meno_vstup').value = '';
+    document.getElementById('heslo_vstup').value = '';
+  };
+
+  function spusti_sledovanie() {
+    onValue(ref(baza, 'sloty'), function(snapshot) {
+      const data = snapshot.val();
+      const tabulka = document.getElementById('tabulka');
+      tabulka.innerHTML = '';
+
+      for (let klic in data) {
+        const slot = data[klic];
+        const riadok = document.createElement('tr');
+
+        const td_slot = document.createElement('td');
+        td_slot.textContent = klic;
+
+        const td_obsadene = document.createElement('td');
+        if (slot.obsadene == true) {
+          td_obsadene.textContent = 'ANO';
+          td_obsadene.style.color = 'red';
+        } else {
+          td_obsadene.textContent = 'NIE';
+          td_obsadene.style.color = 'green';
+        }
+
+        const td_kod = document.createElement('td');
+        if (slot.kod == "" || slot.kod == null) {
+          td_kod.textContent = '-';
+        } else {
+          td_kod.textContent = slot.kod;
+        }
+
+        riadok.appendChild(td_slot);
+        riadok.appendChild(td_obsadene);
+        riadok.appendChild(td_kod);
+        tabulka.appendChild(riadok);
+      }
+    });
+
+    onValue(ref(baza, 'akcia'), function(snapshot) {
+      const val = snapshot.val();
+      if (val == "" || val == null) {
+        document.getElementById('akcia_val').textContent = '-';
+      } else {
+        document.getElementById('akcia_val').textContent = val;
+      }
+    });
+
+    onValue(ref(baza, 'akciaSlot'), function(snapshot) {
+      const val = snapshot.val();
+      if (val == 0 || val == null) {
+        document.getElementById('akcia_slot_val').textContent = '-';
+      } else {
+        document.getElementById('akcia_slot_val').textContent = val;
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
