@@ -2,6 +2,7 @@
 <html lang="sk">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bubnová garáž - Admin</title>
   <style>
     
@@ -10,21 +11,27 @@
       background-color: #1e222b;
       color: #f5f5f5;
       margin: 0;
-      padding: 40px 20px;
+      padding: 20px;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 80vh;
+      min-height: 90vh;
     }
 
+  
     #prihlasenie, #panel {
       background-color: #282c34;
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
       width: 100%;
-      max-width: 450px;
+      max-width: 500px;
       box-sizing: border-box;
+    }
+
+  
+    #panel {
+      max-width: 600px;
     }
 
     h2 {
@@ -38,6 +45,12 @@
     p {
       color: #abb2bf;
       margin: 10px 0 5px 0;
+    }
+
+
+    .heslo-kontajner {
+      position: relative;
+      width: 100%;
     }
 
     input[type="text"], input[type="password"] {
@@ -58,7 +71,26 @@
       outline: none;
     }
 
-    /* Tlačidlá */
+
+    .btn-ukaz-heslo {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      background: none;
+      border: none;
+      color: #abb2bf;
+      cursor: pointer;
+      font-size: 14px;
+      width: auto;
+      padding: 0;
+      margin: 0;
+    }
+    .btn-ukaz-heslo:hover {
+      color: #ff4d4d;
+      background: none;
+    }
+
+
     button {
       width: 100%;
       padding: 12px;
@@ -88,61 +120,60 @@
       background-color: #3e4451;
     }
 
-    table {
+
+    .tabulka-responsivita {
       width: 100%;
-      border-collapse: collapse;
-      background-color: #21252b;
-      border-radius: 8px;
-      overflow: hidden;
+      overflow-x: auto;
       margin-top: 15px;
+      padding-right: 110px; 
+      box-sizing: border-box;
     }
 
-    th, td {
-      padding: 12px 15px;
-      text-align: left;
-    }
-
-    th {
-      background-color: #3e4451;
-      color: #fff;
-      font-weight: 600;
-      text-transform: uppercase;
-      font-size: 13px;
-      letter-spacing: 0.5px;
-    }
-
-    tr {
-      border-bottom: 1px solid #282c34;
-    }
-
-    tr:last-child {
-      border-bottom: none;
-    }
-
-    .kontajner-akcie {
+    .tabulka-riadok {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      background-color: #21252b;
+      border-radius: 6px;
+      padding: 10px;
+      border: 1px solid #282c34;
       position: relative;
     }
+
+
+    .bunka {
+      flex: 1;
+      padding: 4px 8px;
+      font-size: 15px;
+      min-width: 60px;
+    }
+    
+    .hlavicka {
+      background-color: #3e4451;
+      font-weight: bold;
+      color: #fff;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      border: none;
+    }
+
 
     .free-range-btn {
       position: absolute;
       left: calc(100% + 15px); 
-      top: 50%;
-      transform: translateY(-50%);
-      white-space: nowrap;
+      width: 95px;
+      padding: 6px 10px;
+      font-size: 12px;
       background-color: #ff4d4d;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      font-size: 13px;
-      cursor: pointer;
-      font-weight: bold;
-      border-radius: 4px;
-      width: auto;
       box-shadow: 0 4px 10px rgba(255, 77, 77, 0.2);
     }
 
-    .free-range-btn:hover {
-      background-color: #e60000;
+    .free-range-prazdne {
+      position: absolute;
+      left: calc(100% + 55px);
+      color: #5c6370;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -153,7 +184,10 @@
     <p>Meno:</p>
     <input type="text" id="meno_vstup" />
     <p>Heslo:</p>
-    <input type="password" id="heslo_vstup" />
+    <div class="heslo-kontajner">
+      <input type="password" id="heslo_vstup" />
+      <button type="button" class="btn-ukaz-heslo" onclick="toggleHeslo()">👁️</button>
+    </div>
     <br>
     <button onclick="prihlasit()">Prihlásiť</button>
     <p id="chyba" style="color:#ff6b6b; font-weight: bold; text-align: center; margin-top: 15px;"></p>
@@ -161,17 +195,16 @@
 
   <div id="panel" style="display:none;">
     <h2>Admin panel - prehľad</h2>
-    <table id="admin-table">
-      <thead>
-        <tr>
-          <th>Slot</th>
-          <th>Obsadené</th>
-          <th>Kód</th>
-        </tr>
-      </thead>
-      <tbody id="tabulka">
-      </tbody>
-    </table>
+    
+    <div class="tabulka-responsivita">
+      <div class="tabulka-riadok hlavicka">
+        <div class="bunka">Slot</div>
+        <div class="bunka">Obsadené</div>
+        <div class="bunka">Kód</div>
+      </div>
+      <div id="tabulka"></div>
+    </div>
+
     <button onclick="odhlasit()">Odhlásiť</button>
   </div>
 
@@ -187,6 +220,18 @@
 
   const apka = initializeApp(konfig);
   const baza = getDatabase(apka);
+
+  window.toggleHeslo = function() {
+    const hesloInput = document.getElementById('heslo_vstup');
+    const btn = document.querySelector('.btn-ukaz-heslo');
+    if (hesloInput.type === 'password') {
+      hesloInput.type = 'text';
+      btn.textContent = '🙈';
+    } else {
+      hesloInput.type = 'password';
+      btn.textContent = '👁️';
+    }
+  };
 
   window.prihlasit = function() {
     const meno = document.getElementById('meno_vstup').value;
@@ -223,12 +268,16 @@
 
       for (let klic in data) {
         const slot = data[klic];
-        const riadok = document.createElement('tr');
+        
+        const riadok = document.createElement('div');
+        riadok.className = 'tabulka-riadok';
 
-        const td_slot = document.createElement('td');
+        const td_slot = document.createElement('div');
+        td_slot.className = 'bunka';
         td_slot.textContent = klic;
 
-        const td_obsadene = document.createElement('td');
+        const td_obsadene = document.createElement('div');
+        td_obsadene.className = 'bunka';
         if (slot.obsadene == true) {
           td_obsadene.textContent = 'ÁNO';
           td_obsadene.style.color = '#ff6b6b';
@@ -239,7 +288,8 @@
           td_obsadene.style.fontWeight = 'bold';
         }
 
-        const td_kod = document.createElement('td');
+        const td_kod = document.createElement('div');
+        td_kod.className = 'bunka';
         if (slot.kod == "" || slot.kod == null) {
           td_kod.textContent = '-';
         } else {
@@ -251,8 +301,6 @@
         riadok.appendChild(td_kod);
 
         if (slot.obsadene == true) {
-          td_kod.className = 'kontajner-akcie';
-          
           const tlacidlo = document.createElement('button');
           tlacidlo.textContent = 'Vyparkovať';
           tlacidlo.className = 'free-range-btn';
@@ -261,7 +309,12 @@
             const cisloSlotu = klic.replace(/[^0-9]/g, ''); 
             window.vyparkovatAuto(cisloSlotu);
           };
-          td_kod.appendChild(tlacidlo);
+          riadok.appendChild(tlacidlo);
+        } else {
+          const pomlcka = document.createElement('span');
+          pomlcka.textContent = '-';
+          pomlcka.className = 'free-range-prazdne';
+          riadok.appendChild(pomlcka);
         }
 
         tabulka.appendChild(riadok);
