@@ -2,7 +2,7 @@
 <html lang="sk">
 <head>
   <meta charset="UTF-8">
-  <title>Bubnová garáž - Admin</title>
+  <title>Bubnovagaraz - Admin</title>
 </head>
 <body>
 
@@ -13,31 +13,34 @@
     <p>Heslo:</p>
     <input type="password" id="heslo_vstup" />
     <br><br>
-    <button onclick="prihlasit()">Prihlásiť</button>
+    <button onclick="prihlasit()">Prihlasit</button>
     <br><br>
     <p id="chyba" style="color:red;"></p>
   </div>
 
   <div id="panel" style="display:none;">
-    <h2>Admin panel - prehľad</h2>
+    <h2>Admin panel - prehled</h2>
+    <p>Data sa aktualizuju automaticky.</p>
     <br>
     <table border="1" cellpadding="8">
       <tr>
         <th>Slot</th>
         <th>Obsadene</th>
         <th>Kod</th>
-        <th>Akcia</th>
       </tr>
       <tbody id="tabulka">
       </tbody>
     </table>
     <br>
-    <button onclick="odhlasit()">Odhlásiť</button>
+    <p>Akcia: <b id="akcia_val">-</b></p>
+    <p>Akcia slot: <b id="akcia_slot_val">-</b></p>
+    <br>
+    <button onclick="odhlasit()">Odhlasit</button>
   </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const konfig = {
     apiKey: "AIzaSyB_zI46x4fn8_b_qgdFib3KtylPs5D9Kww",
@@ -68,12 +71,8 @@
     document.getElementById('heslo_vstup').value = '';
   };
 
-  window.vyparkovanie_admin = async function(cislo_slotu) {
-    await set(ref(baza, '/akcia'), 'vystup');
-    await set(ref(baza, '/akciaSlot'), cislo_slotu);
-  };
-
   function spusti_sledovanie() {
+    // onValue sa zavola vzdy ked sa nieco zmeni v databaze
     onValue(ref(baza, 'sloty'), function(snapshot) {
       const data = snapshot.val();
       const tabulka = document.getElementById('tabulka');
@@ -102,21 +101,28 @@
           td_kod.textContent = slot.kod;
         }
 
-        const td_akcia = document.createElement('td');
-        if (slot.obsadene == true) {
-          const btn = document.createElement('button');
-          btn.textContent = 'Vyparkovanie';
-          btn.onclick = function() { vyparkovanie_admin(parseInt(klic)); };
-          td_akcia.appendChild(btn);
-        } else {
-          td_akcia.textContent = '-';
-        }
-
         riadok.appendChild(td_slot);
         riadok.appendChild(td_obsadene);
         riadok.appendChild(td_kod);
-        riadok.appendChild(td_akcia);
         tabulka.appendChild(riadok);
+      }
+    });
+
+    onValue(ref(baza, 'akcia'), function(snapshot) {
+      const val = snapshot.val();
+      if (val == "" || val == null) {
+        document.getElementById('akcia_val').textContent = '-';
+      } else {
+        document.getElementById('akcia_val').textContent = val;
+      }
+    });
+
+    onValue(ref(baza, 'akciaSlot'), function(snapshot) {
+      const val = snapshot.val();
+      if (val == 0 || val == null) {
+        document.getElementById('akcia_slot_val').textContent = '-';
+      } else {
+        document.getElementById('akcia_slot_val').textContent = val;
       }
     });
   }
