@@ -89,7 +89,7 @@
     if (najdeny_slot == null) return;
     await set(ref(baza, '/akcia'), 'vystup');
     await set(ref(baza, '/akciaSlot'), parseInt(najdeny_slot));
-    document.getElementById('sprava').textContent = 'Garaze sa otvara, pockaite pri vchode.';
+    document.getElementById('sprava').textContent = 'Garáž sa otvára, počkajte pri vchode.';
     document.getElementById('btn_vyparkovanie').disabled = true;
   };
 </script>
